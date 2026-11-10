@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>$HOW ME THE MONEY! — Add expense</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/css/tracker.css">
+</head>
+<body>
+    <main class="page form-page">
+        <header>
+            <p class="eyebrow">Your personal spending tracker</p>
+            <h1>$HOW ME THE MONEY!</h1>
+            <p>Track where your money goes, one expense at a time.</p>
+        </header>
+
+        <section class="panel entry-panel">
+            <h2>Add an expense</h2>
+
+            {{#if error}}
+                <p class="error" role="alert">{{error}}</p>
+            {{/if}}
+
+            <form action="/tracker/v1" method="POST">
+                <label for="date">Date</label>
+                <input
+                    id="date"
+                    name="date"
+                    type="date"
+                    value="{{date}}"
+                    required
+                >
+
+                <label for="amount">Amount in dollars</label>
+                <input
+                    id="amount"
+                    class="amount-input"
+                    name="amount"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="25.50"
+                    value="{{amount}}"
+                    required
+                >
+
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Choose a category</option>
+                    <option value="food" {{#if foodSelected}}selected{{/if}}>
+                        Food
+                    </option>
+                    <option value="gas" {{#if gasSelected}}selected{{/if}}>
+                        Gas
+                    </option>
+                    <option value="fun" {{#if funSelected}}selected{{/if}}>
+                        Fun
+                    </option>
+                </select>
+
+                <button class="add-button" type="submit">
+                    Add expense
+                </button>
+            </form>
+
+            <a class="navigation-link" href="/tracker/v1/dashboard">
+                View dashboard
+            </a>
+        </section>
+
+        <p class="small-print">
+            Your tracker keeps your 30 most recently added expenses.
+        </p>
+    </main>
+</body>
+</html>

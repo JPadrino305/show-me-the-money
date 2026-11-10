@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>$HOW ME THE MONEY! — Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/css/tracker.css">
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"
+        defer
+    ></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"
+        defer
+    ></script>
+    <script src="/js/dashboard.js" defer></script>
+    <script src="/js/jars.js" defer></script>
+</head>
+<body>
+    <main class="page">
+        <header>
+            <p class="eyebrow">Your spending dashboard</p>
+            <h1>$HOW ME THE MONEY!</h1>
+            <p>Totals reflect the {{count}} expenses currently saved.</p>
+        </header>
+
+        {{#if empty}}
+            <p class="empty-message" role="status">
+                No expenses have been added yet.
+                Add an expense to fill your charts and jars.
+                Your total spending is $0.00.
+            </p>
+        {{/if}}
+
+        <div id="dashboard-data" data-values="{{chartData}}" hidden></div>
+
+        <section class="panel">
+            <h2>Spending by Day</h2>
+            <div class="chart-box">
+                <canvas
+                    id="daily-chart"
+                    role="img"
+                    aria-label="Daily spending for Food, Gas, and Fun"
+                ></canvas>
+            </div>
+        </section>
+
+        <div class="dashboard-row">
+            <section class="panel">
+                <h2>Spending by Category</h2>
+
+                <div class="chart-box pie-box">
+                    <canvas
+                        id="category-chart"
+                        role="img"
+                        aria-label="Spending totals by category"
+                    ></canvas>
+                </div>
+
+                <ul class="category-totals">
+                    <li><span class="dot food"></span> Food: {{food}}</li>
+                    <li><span class="dot gas"></span> Gas: {{gas}}</li>
+                    <li><span class="dot fun"></span> Fun: {{fun}}</li>
+                </ul>
+            </section>
+
+            <section class="panel total-panel">
+                <h2>Total Spent</h2>
+                <p class="total-amount">{{total}}</p>
+                <p>Across the entries currently saved in your cookie.</p>
+            </section>
+        </div>
+
+        <nav class="dashboard-navigation" aria-label="Tracker navigation">
+            <a class="button add-button" href="/tracker/v1">
+                Add an expense
+            </a>
+
+            <form action="/tracker/v1/clear" method="POST">
+                <button class="clear-button" type="submit">
+                    Clear all data
+                </button>
+            </form>
+        </nav>
+
+        <section class="panel jars-panel">
+            <h2>Where your money went</h2>
+            <p>One full green banknote represents $20 spent.</p>
+
+            <div id="jars-container"></div>
+
+            <p class="caption">Money spent, not saved.</p>
+        </section>
+    </main>
+</body>
+</html>

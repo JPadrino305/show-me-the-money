@@ -1,0 +1,27 @@
+{
+  "name": "show-me-the-money",
+  "version": "1.0.0",
+  "description": "Money tracking app for CIM343",
+  "main": "app.js",
+  "scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "start": "node app.js"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JPadrino305/show-me-the-money.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JPadrino305/show-me-the-money/issues"
+  },
+  "homepage": "https://github.com/JPadrino305/show-me-the-money#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^5.3.0",
+    "hbs": "^4.4.0"
+  }
+}
