@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>$HOW ME THE MONEY! — V2</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/css/tracker.css">
+    <link rel="stylesheet" href="/css/tracker-v2.css">
+</head>
+
+<body>
+    <main class="page form-page">
+        <header>
+            <p class="eyebrow">Monthly budgeting — version 2</p>
+            <h1>$HOW ME THE MONEY!</h1>
+            <p>Set your budget. Track your spending. Know what is left.</p>
+        </header>
+
+        {{#if notice}}
+            <p class="error" role="alert">{{notice}}</p>
+        {{/if}}
+
+        {{#if error}}
+            <p class="error" role="alert">{{error}}</p>
+        {{/if}}
+
+        <section class="panel entry-panel">
+            <h2>Monthly budget</h2>
+
+            <p>
+                Save a budget for an expense's month before adding
+                that expense.
+            </p>
+
+            <form action="/tracker/v2/budget" method="POST">
+                <label for="budget-month">Month</label>
+                <input
+                    id="budget-month"
+                    name="month"
+                    type="month"
+                    value="{{month}}"
+                    max="{{currentMonth}}"
+                    required
+                >
+
+                <label for="budget-amount">
+                    Monthly budget in dollars
+                </label>
+                <input
+                    id="budget-amount"
+                    class="amount-input"
+                    name="budget"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="500.00"
+                    value="{{budget}}"
+                    required
+                >
+
+                <button class="add-button" type="submit">
+                    Save monthly budget
+                </button>
+            </form>
+
+            {{#if savedBudget}}
+                <p class="saved-budget">
+                    Saved budget for {{month}}: {{savedBudget}}
+                </p>
+            {{/if}}
+
+            {{#if budgets}}
+                <h3>Saved monthly budgets</h3>
+
+                <ul class="saved-budget-list">
+                    {{#each budgets}}
+                        <li>
+                            <a href="/tracker/v2?month={{month}}">
+                                {{month}}
+                            </a>
+                            — {{budget}}
+                        </li>
+                    {{/each}}
+                </ul>
+            {{/if}}
+        </section>
+
+        <section class="panel entry-panel">
+            <h2>Add an expense</h2>
+
+            <form action="/tracker/v2" method="POST">
+                <label for="expense-date">Date</label>
+                <input
+                    id="expense-date"
+                    name="date"
+                    type="date"
+                    value="{{date}}"
+                    max="{{today}}"
+                    required
+                >
+
+                <label for="expense-amount">Amount in dollars</label>
+                <input
+                    id="expense-amount"
+                    class="amount-input"
+                    name="amount"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="25.50"
+                    value="{{amount}}"
+                    required
+                >
+
+                <label for="expense-category">Category</label>
+                <select
+                    id="expense-category"
+                    name="category"
+                    required
+                >
+                    <option value="">Choose a category</option>
+
+                    <option
+                        value="food"
+                        {{#if foodSelected}}selected{{/if}}
+                    >
+                        Food
+                    </option>
+
+                    <option
+                        value="gas"
+                        {{#if gasSelected}}selected{{/if}}
+                    >
+                        Gas
+                    </option>
+
+                    <option
+                        value="fun"
+                        {{#if funSelected}}selected{{/if}}
+                    >
+                        Fun
+                    </option>
+                </select>
+
+                <button class="add-button" type="submit">
+                    Add expense
+                </button>
+            </form>
+
+            <a class="navigation-link" href="/tracker/v2/dashboard">
+                View dashboard
+            </a>
+        </section>
+
+        <aside class="panel tracker-help">
+            <h2>About your records</h2>
+
+            <p>
+                Charts and jars show your latest 30 entries.
+                Monthly budget totals include all expenses recorded
+                for each month, even after older entry details are removed.
+            </p>
+
+            <p>
+                Dates and month boundaries use UTC. Future-dated
+                expenses and future-month budgets are not accepted.
+            </p>
+
+            <p>
+                Your cookie expires 30 days after your last successful
+                save. Clearing tracker data or browser cookies removes
+                your budgets, spending records, and savings history.
+            </p>
+        </aside>
+    </main>
+</body>
+</html>

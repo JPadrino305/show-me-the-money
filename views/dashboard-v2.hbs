@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>$HOW ME THE MONEY! — V2 Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/css/tracker.css">
+    <link rel="stylesheet" href="/css/tracker-v2.css">
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"
+        defer
+    ></script>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"
+        defer
+    ></script>
+
+    <script src="/js/dashboard.js" defer></script>
+    <script src="/js/jars.js" defer></script>
+    <script src="/js/budget.js" defer></script>
+</head>
+
+<body>
+    <main class="page">
+        <header>
+            <p class="eyebrow">Your spending dashboard — version 2</p>
+            <h1>$HOW ME THE MONEY!</h1>
+            <p>
+                Charts and jars reflect the {{count}} most recent
+                expenses currently saved.
+            </p>
+        </header>
+
+        {{#if notice}}
+            <p class="error" role="alert">{{notice}}</p>
+        {{/if}}
+
+        {{#if empty}}
+            <p class="empty-message" role="status">
+                No expenses have been added yet.
+                Save a monthly budget, then add an expense
+                to fill your charts and jars.
+            </p>
+        {{/if}}
+
+        <div
+            id="dashboard-data"
+            data-values="{{chartData}}"
+            hidden
+        ></div>
+
+        <section class="panel">
+            <h2>Spending by Day</h2>
+            <p class="section-note">Latest 30 entries</p>
+
+            <div class="chart-box">
+                <canvas
+                    id="daily-chart"
+                    role="img"
+                    aria-label="Daily spending for Food, Gas, and Fun"
+                ></canvas>
+            </div>
+        </section>
+
+        <div class="dashboard-row">
+            <section class="panel">
+                <h2>Spending by Category</h2>
+                <p class="section-note">Latest 30 entries</p>
+
+                <div class="chart-box pie-box">
+                    <canvas
+                        id="category-chart"
+                        role="img"
+                        aria-label="Recent spending totals by category"
+                    ></canvas>
+                </div>
+
+                <ul class="category-totals">
+                    <li>
+                        <span class="dot food"></span>
+                        Food: {{food}}
+                    </li>
+                    <li>
+                        <span class="dot gas"></span>
+                        Gas: {{gas}}
+                    </li>
+                    <li>
+                        <span class="dot fun"></span>
+                        Fun: {{fun}}
+                    </li>
+                </ul>
+            </section>
+
+            <section class="panel total-panel">
+                <h2>Total Spent — latest 30 entries</h2>
+                <p class="total-amount">{{total}}</p>
+                <p>
+                    This is not necessarily the selected month's
+                    complete spending total.
+                </p>
+            </section>
+        </div>
+
+        <nav
+            class="dashboard-navigation"
+            aria-label="Version 2 tracker navigation"
+        >
+            <a
+                class="button add-button"
+                href="/tracker/v2?month={{selectedMonth}}"
+            >
+                Add an expense
+            </a>
+
+            <form action="/tracker/v2/clear" method="POST">
+                <button class="clear-button" type="submit">
+                    Clear all data
+                </button>
+            </form>
+        </nav>
+
+        <p class="small-print">
+            Clear all data removes all v2 expenses, budgets,
+            monthly totals, and savings history. V1 is unchanged.
+        </p>
+
+        <section class="panel jars-panel">
+            <h2>Where your money went</h2>
+            <p>Latest 30 entries. One full green banknote represents $20 spent.</p>
+
+            <div id="jars-container"></div>
+
+            <p class="caption">Money spent, not saved.</p>
+        </section>
+
+        <section
+            id="budget-panel"
+            class="panel budget-panel"
+            aria-labelledby="budget-heading"
+        >
+            <h2 id="budget-heading">Monthly budget</h2>
+
+            <form
+                class="month-selector"
+                action="/tracker/v2/dashboard"
+                method="GET"
+            >
+                <label for="dashboard-month">Choose a month</label>
+
+                <select id="dashboard-month" name="month">
+                    {{#each monthOptions}}
+                        <option
+                            value="{{month}}"
+                            {{#if selected}}selected{{/if}}
+                        >
+                            {{month}}
+                        </option>
+                    {{/each}}
+                </select>
+
+                <button class="add-button" type="submit">
+                    View month
+                </button>
+            </form>
+
+            <h3>{{selectedMonth}}</h3>
+
+            <p>
+                Includes all recorded spending for this month,
+                not only the latest 30 entries.
+            </p>
+
+            {{#if hasBudget}}
+                <dl class="budget-summary">
+                    <div>
+                        <dt>Monthly budget</dt>
+                        <dd>{{budget}}</dd>
+                    </div>
+
+                    <div>
+                        <dt>Monthly spending</dt>
+                        <dd>{{monthlySpent}}</dd>
+                    </div>
+
+                    {{#if remaining}}
+                        <div>
+                            <dt>Remaining budget</dt>
+                            <dd>{{remaining}}</dd>
+                        </div>
+                    {{/if}}
+
+                    {{#if over}}
+                        <div>
+                            <dt>Over budget</dt>
+                            <dd>{{over}}</dd>
+                        </div>
+                    {{/if}}
+
+                    <div>
+                        <dt>Budget used</dt>
+                        <dd>{{percentUsed}}%</dd>
+                    </div>
+                </dl>
+
+                <div
+                    id="budget-animation-data"
+                    data-values="{{budgetAnimationData}}"
+                    hidden
+                ></div>
+
+                <div
+                    id="budget-meter"
+                    class="budget-meter"
+                    role="img"
+                    aria-label="{{percentUsed}}% of budget used. {{budgetStatus}}"
+                >
+                    <div
+                        id="budget-meter-fill"
+                        class="budget-meter-fill"
+                    ></div>
+                </div>
+
+                <p class="meter-scale">
+                    <span>0% used</span>
+                    <span>100% used</span>
+                </p>
+
+                <p id="budget-status" class="budget-status">
+                    {{budgetStatus}}
+                </p>
+
+                {{#if warning}}
+                    <p class="budget-warning-text">{{warning}}</p>
+                {{/if}}
+
+                <a href="/tracker/v2?month={{selectedMonth}}">
+                    Update this month's budget
+                </a>
+            {{else}}
+                <p class="empty-message">
+                    Set a monthly budget to see your budget meter.
+                </p>
+
+                <a
+                    class="button add-button"
+                    href="/tracker/v2?month={{selectedMonth}}"
+                >
+                    Set monthly budget
+                </a>
+            {{/if}}
+        </section>
+
+        <section
+            class="panel savings-panel"
+            aria-labelledby="savings-heading"
+        >
+            <h2 id="savings-heading">Recorded savings</h2>
+
+            <p class="total-amount">{{recordedSavings}}</p>
+
+            <p>
+                Unspent budget from completed months, based only
+                on the expenses you entered. This is not verified
+                bank savings.
+            </p>
+
+            {{#if hasSavingsHistory}}
+                <div class="table-scroll">
+                    <table class="savings-table">
+                        <caption>Completed-month records</caption>
+
+                        <thead>
+                            <tr>
+                                <th scope="col">Month</th>
+                                <th scope="col">Budget</th>
+                                <th scope="col">Spent</th>
+                                <th scope="col">Savings</th>
+                                <th scope="col">Over budget</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {{#each savingsRows}}
+                                <tr>
+                                    <th scope="row">{{month}}</th>
+                                    <td>{{budget}}</td>
+                                    <td>{{spent}}</td>
+                                    <td>{{savings}}</td>
+                                    <td>{{over}}</td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            {{else}}
+                <p class="empty-message">
+                    No completed-month savings records yet.
+                    Unspent money in an unfinished month is
+                    remaining budget, not recorded savings.
+                </p>
+            {{/if}}
+
+            <p class="small-print">
+                Months use UTC calendar boundaries. Savings are
+                recalculated when you visit; no background task runs
+                when this page is closed.
+            </p>
+
+            <p class="small-print">
+                History lasts only while your tracker cookie is retained.
+                It expires 30 days after your last successful save.
+                Viewing the dashboard does not extend that lifetime.
+                Clearing tracker data or browser cookies removes history.
+                This is not permanent or tamper-proof financial storage.
+            </p>
+        </section>
+    </main>
+
+    <aside
+        id="budget-popup"
+        class="budget-popup"
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby="budget-popup-title"
+        aria-describedby="budget-popup-message"
+        hidden
+    >
+        <h2 id="budget-popup-title">Budget warning</h2>
+
+        <p
+            id="budget-popup-message"
+            role="status"
+            aria-live="polite"
+        ></p>
+
+        <button
+            id="budget-popup-close"
+            class="clear-button"
+            type="button"
+        >
+            Close warning
+        </button>
+    </aside>
+</body>
+</html>

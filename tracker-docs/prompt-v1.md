@@ -93,3 +93,76 @@ White headings and text.
 Green amount field and Add expense button.
 Purple chart panel and Clear all data button.
 Instrument Serif (google fonts).
+
+
+
+# Version 1 Testing
+
+App: $HOW ME THE MONEY!
+
+## Passed tests
+
+### Expense submission and populated dashboard
+- Added expenses using the entry form.
+- The dashboard displayed category totals, daily spending,
+  Total Spent, and the p5.js jars.
+- The displayed category totals agreed with Total Spent.
+
+### Same-date and same-category grouping
+Submitted:
+- Food: $25.50 on 2026-11-04.
+- Food: $14.50 on 2026-11-04.
+- Fun: $10.25 on 2026-11-05.
+
+Results:
+- Three saved expenses.
+- Food daily total: $40.00 on 2026-11-04.
+- Food category total: $40.00.
+- Fun category total: $10.25.
+- Total Spent: $50.25.
+- Food jar showed two full banknotes.
+- Fun jar showed a partial banknote.
+
+### Clearing and empty-state display
+- Used Clear all data.
+- Dashboard showed zero saved expenses and $0.00 total.
+- A readable no-expenses message appeared.
+- The charts contained no spending data.
+- All three jars were empty.
+
+### Server-side zero-amount rejection
+- Temporarily bypassed browser form validation.
+- Submitted an amount of zero.
+- The server returned a readable error above the form.
+- Existing saved entries and the $50.25 total remained unchanged.
+
+### Cookie inspection
+- Found MoneySpent_v1 in Firefox Storage Inspector.
+- HttpOnly was true.
+- SameSite was Lax.
+- Creation and expiration timestamps were 30 days apart.
+- The full cookie path was not visible in the screenshot.
+
+### Most recent 30 entries
+- Started with an empty dashboard.
+- Submitted one $99 Food expense followed by thirty $1 Food expenses.
+- Dashboard showed 30 saved expenses and $30.00 total.
+- This matched removal of the oldest $99 entry.
+- Food jar showed one full $20 note and a half-width note.
+
+## Partially verified or not yet tested
+
+- Missing date and category produced browser validation bubbles.
+  Server-side date and category rejection was not independently verified.
+- Impossible dates and unsupported category values were not tested.
+- Negative amounts and amounts with more than two decimal places
+  were not independently tested.
+- Malformed-cookie recovery was not tested.
+- The full cookie path still needs inspection.
+- Mobile layout still needs review.
+
+## Known implementation limitation
+
+- Each jar draws at most 100 banknotes.
+- For larger totals, the sketch reports the full note count.
+- This differs from literally drawing every $20 banknote.
