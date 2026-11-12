@@ -1,7 +1,4 @@
-Keep all the chart code unchanged in dashboard-v2.js. The new dashboard uses the same chart element IDs and data format.
-Update the large-total label in jars-v2.js
 
-In the new copy only, find:
 
 javascript
       if (totalNotes > 100) {
